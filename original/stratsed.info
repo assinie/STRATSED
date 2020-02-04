@@ -98,7 +98,7 @@ label { addr $0057; size 1; name "INDIC2" ; comment "Travail DOS (HRSFB)"; };
 label { addr $0060; size 1; name "ACC1E" ; comment "Accumulateur 1: Expossant"; };
 label { addr $0061; size 4; name "ACC1M" ; comment "Accumulateur 1: Mantise"; };
 label { addr $0065; size 1; name "ACC1S" ; comment "Accumulateur 1: Signe"; };
-label { addr $0066; size 1; name "ACC1E" ; comment "Accumulateur 1: Extension (b7)"; };
+label { addr $0066; size 1; name "ACC1EX"; comment "Accumulateur 1: Extension (b7)"; };
 label { addr $0067; size 1; name "ACC1J" ; comment "Accumulateur 1: Indicateur vour conversion décimale"; };
 
 label { addr $0068; size 1; name "ACC2E" ; comment "Accumulateur 2: Expossant"; };
@@ -110,7 +110,7 @@ label { addr $006E; size 1; name "ACCPS" ; comment "Produit des signes (ACC1S EO
 label { addr $006f; size 4; name "ACC3"  ; comment "Accumulateur 3"; };
 
 label { addr $0073; size 1; name "ACC4E" ; comment "Accumulateur 4: Expossant"; };
-label { addr $0074; size 4; name "ACC2M" ; comment "Accumulateur 4: Mantise"; };
+label { addr $0074; size 4; name "ACC4M" ; comment "Accumulateur 4: Mantise"; };
 
 label { addr $0078; size 1; name "ACC5E" ; comment "Accumulateur 5: Expossant"; };
 label { addr $0079; size 4; name "ACC5M" ; comment "Accumulateur 5: Mantise"; };
@@ -279,9 +279,15 @@ label { addr $054f; size 3;  name "RWTS";   comment "Vecteur de détournement RW
 label { addr $0590; size 50; name "BUFEDT"; comment "Buffer Editeur de Texte"; };
 
 ############################################################
+# Page 06
+############################################################
+
+
+############################################################
 # Page 07
 ############################################################
 label { addr $07ea; size 3;  name "TLMCAL"; comment "Call Telemon (BRK xx RTS ou JSR $BFE0)"; };
+label { addr $07fb; size 2;  name "HIMEM_val"; comment "Valeur de HIMEM (Hyperbasic, valeur initiale: $9800)"; };
 label { addr $07fd; size 2;  name "VARBOT"; comment "Adresse de début des variables (Hyperbasic)"; };
 
 ############################################################
@@ -306,7 +312,19 @@ label { addr $9CC0; size $0008; name "PAGE"  ; comment "Buffer pour le nom de la
 
 
 ############################################################
-# Page C0-D3
+# Page A0
+############################################################
+label { addr $a000; name "SCRHIR"; comment "Adresse début écran HIRES"; };
+
+
+############################################################
+# Page BB
+############################################################
+label { addr $bb80; name "SCREEN"; comment "Adresse début écran TEXT"; };
+
+
+############################################################
+# Page C0-D3               Buffers
 ############################################################
 range { start $c000; end $c07f; type bytetable; };
 
@@ -334,7 +352,11 @@ range { start $ca00; end $d1ff; type bytetable; name "LPRBU"; comment "Buffer im
 range { start $d200; end $d3ff; type bytetable; name "TD200"; };
 
 
+############################################################
+# Page D4
+############################################################
 label { addr $d400; name "_RWTS"; comment "Routine de gestion des RWTS"; };
+
 
 ############################################################
 # Page D6
@@ -342,192 +364,188 @@ label { addr $d400; name "_RWTS"; comment "Routine de gestion des RWTS"; };
 range { start $d61d; end $d620; type bytetable;  name "TD61D"; comment "Table indexée par DRIVE (utilisée par _RWTS)"; };
 
 
-
-############################################################
-# Routines Xxxxxx
-############################################################
-label { addr $f30a; name "_XMERGE";  comment "Merge (Hyperbasic)"; };
-label { addr $eea1; name "_XFST";    comment "Prendre infos fichier (FICNUM)"; };
-label { addr $f01c; name "_XSPUT";   comment "Ecrire (séquentiel)"; };
-label { addr $f082; name "_XSTAKE";  comment "Lire (séquntiel)"; };
-label { addr $eedd; name "_XOPEN";   comment "Ouvre un fichier (BUFNOM, FICNUM)"; };
-label { addr $efe9; name "_XCLOSE";  comment "Ferme un fichier (FICNUM)"; };
-label { addr $f14e; name "_XTAKE";   comment "Prendre enregistrement (fichier FICUM)"; };
-label { addr $f14c; name "_XPUT";    comment "Ecrire enregistrement (fichier FICNUM)"; };
-label { addr $f086; name "_XAPPEN";  comment "Placer index séquentiel à la fin du fichier"; };
-label { addr $f138; name "_XREWIN";  comment "Placer index séquentiel au début du fichier"; };
-label { addr $f08a; name "_XJUMP";   comment "Sauter enregistrement (fichier séquentiel FICNUM)"; };
-label { addr $ec59; name "_XLGBUF";  comment "Calcul longueur du tampon de fichier (FICNUM)"; };
-label { addr $d995; name "_XERVEC";  comment "Restaure le vecteur d'erreur"; };
-label { addr $db35; name "_XESAVE";  comment "Sauve l'écran TEXT ou HIRES (selon FLGTEL)"; };
-label { addr $e6bf; name "_XCOPY";   comment "Copie de fichiers"; };
-label { addr $e137; name "_XDNAME";  comment "Change le nom de la disquette"; };
-label { addr $e310; name "_XUPDAT";  comment "Recopie le DOS en mémoire"; };
-label { addr $e351; name "_XFORMA";  comment "Formate la disquette DRIVE"; };
-label { addr $e027; name "_XREN";    comment "Change le nom d'un fichier"; };
-label { addr $df33; name "_XDELBK";  comment "DELBAK"; };
-label { addr $df40; name "_XDELN";   comment "DEL"; };
-label { addr $e0e5; name "_XPROT";   comment "PROT"; };
-label { addr $e0e8; name "_XUNPROT"; comment "UNPROT"; };
-label { addr $da72; name "_XDIRN";   comment "Catalogue (nom -> BUFNOM)"; };
-label { addr $ea54; name "_XBKP";    comment "Backup du lecteur BUFNOM vers le lecteur BUFNOM+1"; };
-label { addr $e204; name "_XINIT";   comment "Initialise la disquette dans le lecteur DRIVE"; };
-label { addr $d612; name "_XERREU";  comment "Génère l'erreur (X)"; };
-label { addr $dccb; name "_XLOAD";   comment "Charge un fichier"; };
-label { addr $db22; name "_XDEFSA";  comment "Valeurs par défaut pour SAVE"; };
-label { addr $dcb6; name "_XDEFLO";  comment "Valeurs par défaut pour LOAD"; };
-label { addr $db57; name "_XSAVE";   comment "Sauve un fichier"; };
-label { addr $de4f; name "_XNOMDE";  comment "Détruit un fichier"; };
-label { addr $d923; name "_XCREAY";  comment "Créé une table P/S de AY secteurs"; };
-label { addr $d90b; name "_XDETSE";  comment "Marque le secteur Y piste A comme utilisé"; };
-label { addr $d856; name "_XLIBSE";  comment "Marque le secteur Y piste A comme libre"; };
-label { addr $d753; name "_XTRVCA";  comment "???"; };
-label { addr $d727; name "_XTRVNM";  comment "Cherche un fichier"; };
-label { addr $d73b; name "_XTRVNX";  comment "Cherche le fichier suivant"; };
-label { addr $d701; name "_XCABU";   comment "Transfert catalogue -> BUFNOM"; };
-label { addr $d6e8; name "_XBUCA";   comment "Transfert BUFNOM ->  catalogue"; };
-label { addr $d6c8; name "_XBUF1";   comment "Initialise le buffer 1 avec des 0"; };
-label { addr $d69a; name "_XSVSEC";  comment "Ecrit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
-label { addr $d694; name "_XSAY";    comment "Ecrit le secteur Y piste A selon DRIVE et RWBUF"; };
-label { addr $d687; name "_XSBUF1";  comment "Ecrit BUF1 dans le secteur Y piste A"; };
-label { addr $d684; name "_XSBUF2";  comment "Ecrit BUF2 dans le secteur Y piste A"; };
-label { addr $d68a; name "_XSBUF3";  comment "Ecrit BUF3 dans le secteur Y piste A"; };
-label { addr $d666; name "_XSCAT";   comment "Ecrit le secteur catalogue selon POSNMP et POSNMS"; };
-
-label { addr $d656; name "_XPRSEC";  comment "Lit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
-label { addr $d63d; name "_XPBUF1";  comment "Lit le secteur Y piste A dans BUF1"; };
-label { addr $d621; name "_XPMAP";   comment "Lit le secteur BITMAP"; };
-
-#                     Vecteurs spécifique TELEMATIC
-label { addr $fd8b; name "_XCTMENA"; comment "Menage (cartouche TELEMATIC)"; };
-label { addr $fda6; name "_XCTDUPL"; comment "Dupliquer (cartouche TELEMATIC)"; };
-label { addr $fd52; name "_XCTRECU"; comment "Récupérer (cartouche TELEMATIC)"; };
-label { addr $fd4c; name "_XCTDETR"; comment "Détruire (cartouche TELEMATIC)"; };
-label { addr $f4a5; name "_XCTEMET"; comment "Emission (cartouche TELEMATIC)"; };
-label { addr $fdcd; name "_XCTSELL"; comment "Sélection Lecteur (cartouche TELEMATIC)"; };
-label { addr $fd3b; name "_XCTINIT"; comment "Initialiser (cartouche TELEMATIC)"; };
-label { addr $fd26; name "_XCTECRI"; comment "Ecrire (cartouche TELEMATIC)"; };
-label { addr $fd32; name "_XCTLIRE"; comment "Lire (cartouche TELEMATIC)"; };
-
 ############################################################
 # Page D9
 ############################################################
-range { start $d9a5; end $d9cc; type bytetable; name "TD9A5"; };
+range { start $d9a5; end $d9c1; type bytetable; name "TD9A5"; };
 
-range { start $d9cd; end $da4f; type texttable; name "SD9CD"; };
-label { addr $d9d8; name "SD9D8"; };
-label { addr $d9e8; name "SD9E8"; };
-label { addr $d9f8; name "SD9F8"; };
-label { addr $da02; name "SDA02"; };
-label { addr $da09; name "SDA09"; };
-label { addr $da11; name "SDA11"; };
-label { addr $da1b; name "SDA1B"; };
-label { addr $da2d; name "SDA2D"; };
-label { addr $da45; name "SDA45"; };
+range { start $d9c2; end $da4f; type texttable; name "SD9C2"; };
+    label { addr $d9c6; name "SD9C6"; };
+    label { addr $d9cd; name "SD9CD"; };
+    label { addr $d9d8; name "SD9D8"; };
+    label { addr $d9e8; name "SD9E8"; };
+    label { addr $d9f8; name "SD9F8"; };
+    label { addr $da02; name "SDA02"; };
+    label { addr $da09; name "SDA09"; };
+    label { addr $da11; name "SDA11"; };
+    label { addr $da1b; name "SDA1B"; };
+    label { addr $da2d; name "SDA2D"; };
+    label { addr $da45; name "SDA45"; };
 
+############################################################
+# Page DB
+############################################################
 range { start $db07; end $db21; type texttable; name "SDB07"; };
-label { addr $db17; name "SDB17"; };
-label { addr $db19; name "SDB19"; };
-label { addr $db1f; name "SDB1F"; };
+    label { addr $db17; name "SDB17"; };
+    label { addr $db19; name "SDB19"; };
+    label { addr $db1f; name "SDB1F"; };
 
-range { start $df0f; end $df1b; type texttable; name "SDF0F"; };
 
+############################################################
+# Page DC
+############################################################
 range { start $dcb3; end $dcb5; type texttable; name "SDCB3"; };
+
+
+############################################################
+# Page DF
+############################################################
+range { start $df0f; end $df1b; type texttable; name "SDF0F"; };
 
 range { start $df27; end $df32; type texttable; name "SDF27"; };
 
+
 ############################################################
-# Page Ex
+# Page E1
 ############################################################
 range { start $e112; end $e136; type texttable; name "SE112"; };
-label { addr $e11b; name "SE11B"; };
-label { addr $e124; name "SE124"; };
-label { addr $e131; name "SE131"; };
+    label { addr $e11b; name "SE11B"; };
+    label { addr $e124; name "SE124"; };
+    label { addr $e131; name "SE131"; };
 
 range { start $e161; end $e1f5; type texttable; name "SE161"; };
-label { addr $e197; name "SE197"; };
-label { addr $e1b4; name "SE1B4"; };
-label { addr $e1b9; name "SE1B9"; };
-label { addr $e1c9; name "SE1C9"; };
-label { addr $e1cc; name "SE1CC"; };
-label { addr $e1de; name "SE1DE"; };
+    label { addr $e197; name "SE197"; };
+    label { addr $e1b4; name "SE1B4"; };
+    label { addr $e1b9; name "SE1B9"; };
+    label { addr $e1c9; name "SE1C9"; };
+    label { addr $e1cc; name "SE1CC"; };
+    label { addr $e1de; name "SE1DE"; };
 
-label { addr $e4f3; size 2; name "LE4F3"; comment "Modification de l'opérande depuis LE21F"; };
+
+############################################################
+# Page E4
+############################################################
 range { start $e4f3; end $e4f4; type code; };
+    label { addr $e4f3; size 2; name "LE4F3"; comment "Modification de l'opérande depuis LE21F"; };
 
-label { addr $e528; size 2; name "LE528"; comment "Modification de l'opérande depuis LE233"; };
+
+############################################################
+# Page E5-E6
+############################################################
 range { start $e528; end $e529; type code; };
+    label { addr $e528; size 2; name "LE528"; comment "Modification de l'opérande depuis LE233"; };
 
-label { addr $e538; size 4; name "TE538"; };
 range { start $e538; end $e55f; type bytetable; };
+    label { addr $e538; size 4; name "TE538"; };
 
-range { start $e560; end $e677; type texttable; };
-label { addr $e560; size 3; name "SE560"; comment "SE560+2 modifié depuis LE3C2"; };
-label { addr $e583; name "SE583"; };
-label { addr $e5a0; name "SE5A0"; };
-label { addr $e5c0; name "SE5C0"; };
-label { addr $e5c6; name "SE5C6"; };
-label { addr $e5d9; name "SE5D9"; };
-label { addr $e5e7; name "SE5E7"; };
-label { addr $e5ef; name "SE5EF"; };
-label { addr $e5fd; name "SE5FD"; };
-label { addr $e608; name "SE608"; };
-label { addr $e60a; name "SE60A"; };
-label { addr $e60f; name "SE60F"; };
-label { addr $e621; name "SE621"; };
-label { addr $e62d; name "SE62D"; };
-label { addr $e635; name "SE635"; };
-label { addr $e63b; name "SE63B"; };
-label { addr $e649; name "SE649"; };
-label { addr $e64e; name "SE64E"; };
+range { start $e560; end $e564; type bytetable; };
+    label { addr $e560; size 5; name "TE560"; comment "TE560+2 modifié depuis LE3CE"; };
 
+range { start $e565; end $e677; type texttable; };
+    label { addr $e565; name "SE565"; };
+    label { addr $e583; name "SE583"; };
+    label { addr $e5a0; name "SE5A0"; };
+    label { addr $e5c0; name "SE5C0"; };
+    label { addr $e5c6; name "SE5C6"; };
+    label { addr $e5d9; name "SE5D9"; };
+    label { addr $e5e7; name "SE5E7"; };
+    label { addr $e5ef; name "SE5EF"; };
+    label { addr $e5fd; name "SE5FD"; };
+    label { addr $e608; name "SE608"; };
+    label { addr $e60a; name "SE60A"; };
+    label { addr $e60f; name "SE60F"; };
+    label { addr $e621; name "SE621"; };
+    label { addr $e62d; name "SE62D"; };
+    label { addr $e635; name "SE635"; };
+    label { addr $e63b; name "SE63B"; };
+    label { addr $e649; name "SE649"; };
+    label { addr $e64e; name "SE64E"; };
+
+
+############################################################
+# Page EA
+############################################################
 range { start $ea15; end $ea53; type texttable; name "SEA15"; };
-label { addr $ea1d; name "SEA1D"; };
-label { addr $ea30; name "SEA30"; };
-label { addr $ea4c; name "SEA4C"; };
+    label { addr $ea1d; name "SEA1D"; };
+    label { addr $ea30; name "SEA30"; };
+    label { addr $ea4c; name "SEA4C"; };
 
+
+############################################################
+# Page EE
+############################################################
 range { start $eecf; end $eed1; type texttable; name "SEECF"; };
 
+
+############################################################
+# Page F3
+############################################################
 label { addr $f38c; name "LF38C"; comment "Remplacer LF484 par LF485-1"; };
 
+
+############################################################
+# Page F4
+############################################################
 label { addr $f475; name "LF475"; comment "Appelle la fonction (Y) de la banque 6 (Hyperbasic)"; };
 
 #label { addr $f482; size 3; name "LF482"; };
 range { start $f482; end $f484; type code; };
+
 label { addr $f485; name "LF485"; comment "Copié en $BFDF par _XMERGE (en LF38C)"; };
 
+
+############################################################
+# Page F5
+############################################################
 range { start $f53d; end $f547; type texttable; name "SF53D"; };
 
-range { start $f90b; end $f90f; type texttable; name "SF90B"; };
 
-range { start $f95d; end $f964; type bytetable; name "TF95D"; };
-
+############################################################
+# Page F8
+############################################################
 label { addr $f8c0; name "LF8C0"; comment "Appelle la fonction XTGET de la banque 3 (Telematic)"; };
 label { addr $f8c3; name "LF8C3"; comment "Appelle la fonction XTINPU de la banque 3 (Telematic)"; };
 
-range { start $fa02; end $fd25; type texttable; name "SFA02"; comment "Messages pour la gestion des BAL"; };
-label { addr $fa1b; name "SFA1B"; };
-label { addr $fa2c; name "SFA2C"; };
-label { addr $fa38; name "SFA38"; };
-label { addr $fa48; name "SFA48"; };
-label { addr $fac1; name "SFAC1"; };
-label { addr $fad2; name "SFAD2"; };
-label { addr $fae4; name "SFAE4"; };
-label { addr $faf7; name "SFAF7"; };
-label { addr $fb39; name "SFB39"; };
-label { addr $fb4c; name "SFB4C"; };
-label { addr $fb67; name "SFB67"; };
-label { addr $fb7e; name "SFB7E"; };
-label { addr $fb92; name "SFB92"; };
-label { addr $fb97; name "SFB97"; };
-label { addr $fc00; name "SFC00"; };
-label { addr $fc04; name "SFC04"; };
-label { addr $fc28; name "SFC28"; };
-label { addr $fc39; name "SFC39"; };
-label { addr $fcc7; name "SFCC7"; };
 
+############################################################
+# Page F9
+############################################################
+range { start $f90b; end $f90f; type texttable; name "SF90B"; };
+range { start $f95d; end $f964; type bytetable; name "TF95D"; };
+
+
+############################################################
+# Page FA
+############################################################
+range { start $fa02; end $fd25; type texttable; name "SFA02"; comment "Messages pour la gestion des BAL"; };
+    label { addr $fa1b; name "SFA1B"; };
+    label { addr $fa2c; name "SFA2C"; };
+    label { addr $fa38; name "SFA38"; };
+    label { addr $fa48; name "SFA48"; };
+    label { addr $fac1; name "SFAC1"; };
+    label { addr $fad2; name "SFAD2"; };
+    label { addr $fae4; name "SFAE4"; };
+    label { addr $faf7; name "SFAF7"; };
+    label { addr $fb39; name "SFB39"; };
+    label { addr $fb4c; name "SFB4C"; };
+    label { addr $fb67; name "SFB67"; };
+    label { addr $fb69; name "SFB69"; };
+    label { addr $fb7e; name "SFB7E"; };
+    label { addr $fb92; name "SFB92"; };
+    label { addr $fb97; name "SFB97"; };
+    label { addr $fc00; name "SFC00"; };
+    label { addr $fc04; name "SFC04"; };
+    label { addr $fc28; name "SFC28"; };
+    label { addr $fc39; name "SFC39"; };
+    label { addr $fcc7; name "SFCC7"; };
+
+
+############################################################
+# Page FD
+############################################################
 range { start $fd88; end $fd8a; type texttable; name "SFD88"; };
 range { start $fdbc; end $fdcc; type texttable; name "SFDBC"; };
+
 
 ############################################################
 # Page FE
@@ -543,12 +561,10 @@ label { addr $fee8;         name "SFEE8"; };
 range { start $fef7; end $fefb; type bytetable; name "SFEF7"; comment "Place le curseur en ligne 0 colonne 1 et efface la ligne"; };
 range { start $fefc; end $ff0d; type addrtable; name "TFEFC"; comment "Table pour les messages d'erreurs"; };
 
-############################################################
-# Page FF
-############################################################
 
-#                     Vecteurs STRATSED
-
+############################################################
+# Page FF            Vecteurs STRATSED
+############################################################
 label { addr $FF0E; name "XMERGE";  comment "Merge (Hyperbasic)";};
 label { addr $FF11; name "XFST";    comment "Prendre les infos delon FICNUM"; };
 label { addr $FF14; name "XSPUT";   comment "Ecrire (séquentiel)"; };
@@ -615,6 +631,77 @@ label { addr $FFC2; name "XCTECRI"; comment "Ecrire (cartouche TELEMATIC)"; };
 label { addr $FFC5; name "XCTLIRE"; comment "Lire (cartouche TELEMATIC)"; };
 
 
+
+############################################################
+# Routines Xxxxxx
+############################################################
+label { addr $f30a; name "_XMERGE";  comment "Merge (Hyperbasic)"; };
+label { addr $eea1; name "_XFST";    comment "Prendre infos fichier (FICNUM)"; };
+label { addr $f01c; name "_XSPUT";   comment "Ecrire (séquentiel)"; };
+label { addr $f082; name "_XSTAKE";  comment "Lire (séquentiel)"; };
+label { addr $eedd; name "_XOPEN";   comment "Ouvre un fichier (BUFNOM, FICNUM)"; };
+label { addr $efe9; name "_XCLOSE";  comment "Ferme un fichier (FICNUM)"; };
+label { addr $f14e; name "_XTAKE";   comment "Prendre enregistrement (fichier FICUM)"; };
+label { addr $f14c; name "_XPUT";    comment "Ecrire enregistrement (fichier FICNUM)"; };
+label { addr $f086; name "_XAPPEN";  comment "Placer index séquentiel à la fin du fichier"; };
+label { addr $f138; name "_XREWIN";  comment "Placer index séquentiel au début du fichier"; };
+label { addr $f08a; name "_XJUMP";   comment "Sauter enregistrement (fichier séquentiel FICNUM)"; };
+label { addr $ec59; name "_XLGBUF";  comment "Calcul longueur du tampon de fichier (FICNUM)"; };
+label { addr $d995; name "_XERVEC";  comment "Restaure le vecteur d'erreur"; };
+label { addr $db35; name "_XESAVE";  comment "Sauve l'écran TEXT ou HIRES (selon FLGTEL)"; };
+label { addr $e6bf; name "_XCOPY";   comment "Copie de fichiers"; };
+label { addr $e137; name "_XDNAME";  comment "Change le nom de la disquette"; };
+label { addr $e310; name "_XUPDAT";  comment "Recopie le DOS en mémoire"; };
+label { addr $e351; name "_XFORMA";  comment "Formate la disquette DRIVE"; };
+label { addr $e027; name "_XREN";    comment "Change le nom d'un fichier"; };
+label { addr $df33; name "_XDELBK";  comment "DELBAK"; };
+label { addr $df40; name "_XDELN";   comment "DEL"; };
+label { addr $e0e5; name "_XPROT";   comment "PROT"; };
+label { addr $e0e8; name "_XUNPROT"; comment "UNPROT"; };
+label { addr $da72; name "_XDIRN";   comment "Catalogue (nom -> BUFNOM)"; };
+label { addr $ea54; name "_XBKP";    comment "Backup du lecteur BUFNOM vers le lecteur BUFNOM+1"; };
+label { addr $e204; name "_XINIT";   comment "Initialise la disquette dans le lecteur DRIVE"; };
+label { addr $d612; name "_XERREU";  comment "Génère l'erreur (X)"; };
+label { addr $dccb; name "_XLOAD";   comment "Charge un fichier"; };
+label { addr $db22; name "_XDEFSA";  comment "Valeurs par défaut pour SAVE"; };
+label { addr $dcb6; name "_XDEFLO";  comment "Valeurs par défaut pour LOAD"; };
+label { addr $db57; name "_XSAVE";   comment "Sauve un fichier"; };
+label { addr $de4f; name "_XNOMDE";  comment "Détruit un fichier"; };
+label { addr $d923; name "_XCREAY";  comment "Créé une table P/S de AY secteurs"; };
+label { addr $d90b; name "_XDETSE";  comment "Marque le secteur Y piste A comme utilisé"; };
+label { addr $d856; name "_XLIBSE";  comment "Marque le secteur Y piste A comme libre"; };
+label { addr $d753; name "_XTRVCA";  comment "???"; };
+label { addr $d727; name "_XTRVNM";  comment "Cherche un fichier"; };
+label { addr $d73b; name "_XTRVNX";  comment "Cherche le fichier suivant"; };
+label { addr $d701; name "_XCABU";   comment "Transfert catalogue -> BUFNOM"; };
+label { addr $d6e8; name "_XBUCA";   comment "Transfert BUFNOM ->  catalogue"; };
+label { addr $d6c8; name "_XBUF1";   comment "Initialise le buffer 1 avec des 0"; };
+label { addr $d69a; name "_XSVSEC";  comment "Ecrit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
+label { addr $d694; name "_XSAY";    comment "Ecrit le secteur Y piste A selon DRIVE et RWBUF"; };
+label { addr $d687; name "_XSBUF1";  comment "Ecrit BUF1 dans le secteur Y piste A"; };
+label { addr $d684; name "_XSBUF2";  comment "Ecrit BUF2 dans le secteur Y piste A"; };
+label { addr $d68a; name "_XSBUF3";  comment "Ecrit BUF3 dans le secteur Y piste A"; };
+label { addr $d666; name "_XSCAT";   comment "Ecrit le secteur catalogue selon POSNMP et POSNMS"; };
+
+label { addr $d656; name "_XPRSEC";  comment "Lit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
+label { addr $d63d; name "_XPBUF1";  comment "Lit le secteur Y piste A dans BUF1"; };
+label { addr $d621; name "_XPMAP";   comment "Lit le secteur BITMAP"; };
+
+#                     Vecteurs spécifique TELEMATIC
+label { addr $fd8b; name "_XCTMENA"; comment "Menage (cartouche TELEMATIC)"; };
+label { addr $fda6; name "_XCTDUPL"; comment "Dupliquer (cartouche TELEMATIC)"; };
+label { addr $fd52; name "_XCTRECU"; comment "Récupérer (cartouche TELEMATIC)"; };
+label { addr $fd4c; name "_XCTDETR"; comment "Détruire (cartouche TELEMATIC)"; };
+label { addr $f4a5; name "_XCTEMET"; comment "Emission (cartouche TELEMATIC)"; };
+label { addr $fdcd; name "_XCTSELL"; comment "Sélection Lecteur (cartouche TELEMATIC)"; };
+label { addr $fd3b; name "_XCTINIT"; comment "Initialiser (cartouche TELEMATIC)"; };
+label { addr $fd26; name "_XCTECRI"; comment "Ecrire (cartouche TELEMATIC)"; };
+label { addr $fd32; name "_XCTLIRE"; comment "Lire (cartouche TELEMATIC)"; };
+
+
+############################################################
+# Signature
+############################################################
 range { start $ffc8; end $fff7; type texttable; name "ROMSIG"; };
 
 range { start $fff8; end $fff9; type addrtable; name "SIG_vector"; };
