@@ -1,0 +1,623 @@
+        GLOBAL {
+            COMMENTS        3;
+            labelBREAK      1;
+            OUTPUTNAME      "src/stratsed.asm";
+            INPUTNAME       "original/stratsed.bin";
+            STARTADDR       $C000;
+            PAGELENGTH      0;                  # No paging
+            CPU             "6502";
+        };
+
+############################################################
+# Page 00
+############################################################
+label { addr $0000; size 2; name "RES"; };
+label { addr $0002; size 2; name "RESB"; };
+
+label { addr $0004; size 2; name "DECDEB"; comment "Paramètres pour décalage"; };
+label { addr $0006; size 2; name "DECFIN"; comment "Paramètres pour décalage"; };
+label { addr $0008; size 2; name "DECCIB"; comment "Paramètres pour décalage"; };
+label { addr $000A; size 2; name "DECTRV"; comment "Paramètres pour décalage"; };
+
+label { addr $000c; size 1; name "TR0"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $000d; size 1; name "TR1"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $000e; size 1; name "TR2"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $000f; size 1; name "TR3"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $0010; size 1; name "TR4"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $0011; size 1; name "TR5"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $0012; size 1; name "TR6"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+label { addr $0013; size 1; name "TR7"   ; comment "Travail, utilisation par HyperBasic à déterminer"; };
+
+label { addr $0014; size 1; name "DEFAFF"; comment "Caractère à afficher par défaut lors de conversion décimale (justification)"; };
+
+label { addr $0021; size 1; name "IRQSVA"; comment "Sauvegarde des registres en entrée d'IRQ"; };
+label { addr $0022; size 1; name "IRQSVX"; comment "Sauvegarde des registres en entrée d'IRQ"; };
+label { addr $0023; size 1; name "IRQSVY"; comment "Sauvegarde des registres en entrée d'IRQ"; };
+label { addr $0024; size 2; name "P0024" ; comment "??? Indiqués comme non utilisés"; };
+
+label { addr $0026; size 2; name "ADSCR" ; comment "Adresse début de la ligne courante écran"; };
+label { addr $0028; size 1; name "SCRNB" ; comment "Numéro de la fenêtre courante"; };
+
+label { addr $002c; size 2; name "ADVDT" ; comment "Adresse écran HIRES"; };
+label { addr $002e; size 2; name "ADASC" ; comment "Adresse table ASCII"; };
+label { addr $0030; size 2; name "ADATR" ; comment "Adresse table des couleurs"; };
+
+label { addr $0032; size 1; name "VDTPAR"; comment "Travail VDT (b7: attribut G0, b6-b4: G0-G1 couleur de fond, b2: G0 soulignage)"; };
+label { addr $0033; size 1; name "VDTASC"; comment "Travail VDT (b7: délimiteur, b6: G1 disjoint/non disjoint, b5-b0: motif G1)"; };
+label { addr $0034; size 1; name "VDTATR"; comment "Travail VDT (b7: , b6: , b5: , b4: , b3: , b2-b0:)"; };
+label { addr $0035; size 1; name "VDTFT" ; comment "Travail VDT (b7: SS2, b6: SEP)"; };
+label { addr $0036; size 1; name "VDTTR0"; comment "Travail VDT"; };
+label { addr $0038; size 1; name "VDTX"  ; comment "Coordonnée écran (G0-G1) colonne"; };
+label { addr $0039; size 1; name "VDTY"  ; comment "Coordonnée écran (G0-G1) ligne"; };
+label { addr $003a; size 1; name "VDTGX" ; comment "Position code graphiqe G1: 0-1 colonne"; };
+label { addr $003b; size 1; name "VDTGY" ; comment "Position code graphiqe G1: 0-1 colonne"; };
+label { addr $003c; size 1; name "FLGVD0"; comment "b7: séquence en cours, b6: ESC, b4: US, b3: REP, b1-b0: nb caractères de la séquence"; };
+label { addr $003d; size 1; name "FLGVD1"; comment "b7: curseur on, b6: mode graphique, b1: mode trace/efface graphique, b0:"; };
+
+label { addr $0042; size 2; name "TIMEUS"; comment "Timer 16 bits utilisateur (secondes)"; };
+label { addr $0044; size 2; name "TIMEUD"; comment "Timer 16 bits utilisateur (1/10 secondes)"; };
+
+
+###########
+#label { addr $004d; size 2; name "HRS1"  ; comment "Paramètres pour le travail sur le mode graphique"; };
+#label { addr $004f; size 2; name "HRS2"  ; comment "Paramètres pour le travail sur le mode graphique"; };
+#label { addr $0051; size 2; name "HRS3"  ; comment "Paramètres pour le travail sur le mode graphique"; };
+#label { addr $0053; size 2; name "HRS4"  ; comment "Paramètres pour le travail sur le mode graphique"; };
+#label { addr $0055; size 2; name "HRS5"  ; comment "Paramètres pour le travail sur le mode graphique"; };
+
+# Ou
+
+label { addr $004d; size 1; name "TD0"    ; comment "Travail DOS (HRS1)"; };
+label { addr $004e; size 1; name "TD1"    ; comment "Travail DOS (HRS1+1)"; };
+label { addr $004f; size 1; name "TD2"    ; comment "Travail DOS (HRS2)"; };
+label { addr $0050; size 1; name "TD3"    ; comment "Travail DOS (HRS2+1)"; };
+label { addr $0051; size 1; name "TD4"    ; comment "Travail DOS (HRS3)"; };
+label { addr $0052; size 1; name "TD5"    ; comment "Travail DOS (HRS3+1)"; };
+label { addr $0053; size 1; name "TD6"    ; comment "Travail DOS (HRS4)"; };
+label { addr $0054; size 1; name "TD7"    ; comment "Travail DOS (HRS4+1)"; };
+label { addr $0055; size 1; name "INDIC0" ; comment "Travail DOS (HRS5)"; };
+label { addr $0056; size 1; name "INDIC1" ; comment "Travail DOS (HRS5+1)"; };
+label { addr $0057; size 1; name "INDIC2" ; comment "Travail DOS (HRSFB)"; };
+
+
+
+###########
+#label { addr $0060; size 1; name "MEN"   ; comment "Menu, travail"; };
+#label { addr $0061; size 1; name "MENDDX"; comment "Menu: coordonnée du 1er choix (colonne)"; };
+#label { addr $0062; size 1; name "MENDDY"; comment "Menu: coordonnée du 1er choix (ligne)"; };
+#label { addr $0063; size 1; name "MENDFY"; comment "Menu:"; };
+#label { addr $0064; size 1; name "MENX"  ; comment "Menu: choix"; };
+#label { addr $0065; size 1; name "MENLX" ; comment "Menu: longueur de la barre de choix"; };
+#label { addr $0066; size 1; name "MENDY" ; comment "Menu:"; };
+#label { addr $0067; size 1; name "MENFY" ; comment "Menu:"; };
+#label { addr $0068; size 1; name "FLGMEN"; comment "Menu:"; };
+#label { addr $0069; size 2; name "ADMEN" ; comment "Menu: table des choix"; };
+
+# Ou
+
+label { addr $0060; size 1; name "ACC1E" ; comment "Accumulateur 1: Expossant"; };
+label { addr $0061; size 4; name "ACC1M" ; comment "Accumulateur 1: Mantise"; };
+label { addr $0065; size 1; name "ACC1S" ; comment "Accumulateur 1: Signe"; };
+label { addr $0066; size 1; name "ACC1E" ; comment "Accumulateur 1: Extension (b7)"; };
+label { addr $0067; size 1; name "ACC1J" ; comment "Accumulateur 1: Indicateur vour conversion décimale"; };
+
+label { addr $0068; size 1; name "ACC2E" ; comment "Accumulateur 2: Expossant"; };
+label { addr $0069; size 4; name "ACC2M" ; comment "Accumulateur 2: Mantise"; };
+label { addr $006D; size 1; name "ACC2S" ; comment "Accumulateur 2: Signe"; };
+
+label { addr $006E; size 1; name "ACCPS" ; comment "Produit des signes (ACC1S EOR ACC2S)"; };
+
+label { addr $006f; size 4; name "ACC3"  ; comment "Accumulateur 3"; };
+
+label { addr $0073; size 1; name "ACC4E" ; comment "Accumulateur 4: Expossant"; };
+label { addr $0074; size 4; name "ACC2M" ; comment "Accumulateur 4: Mantise"; };
+
+label { addr $0078; size 1; name "ACC5E" ; comment "Accumulateur 5: Expossant"; };
+label { addr $0079; size 4; name "ACC5M" ; comment "Accumulateur 5: Mantise"; };
+
+label { addr $0080; size  5; name "ACC6"  ; comment "Accu 6"; };
+
+# Ou
+
+#label { addr $0060; size 44; name "VARMNB" ; comment "Variables systèmes (???)"; };
+
+
+###########
+label { addr $008c; size 68; name "VARLNG"; comment "Variables systèmes (langage)"; };
+label { addr $00d0; size 48; name "VARAPL"; comment "Variables systèmes (application)"; };
+
+
+############################################################
+# Page 01
+############################################################
+label { addr $0100; size 16; name "BUFTRV"; };
+
+
+############################################################
+# Page 02
+############################################################
+label { addr $0200; size 8; name "BNKST"  ; comment "Valeur des octets $FFFB de chaque banque"; };
+label { addr $0208; size 4; name "TABDRV" ; comment "Activation des lecteurs"; };
+label { addr $020c;         name "DRVDEF" ; comment "Numéro (0-3) du lecteur par défaut"; };
+label { addr $020d;         name "FLGTEL" ; comment "b7:1-> haute résolution, b6:1-> mode minitel, b5:1-> mode degrés (0->radian), b2:1->BONJOUR.COM existe, b1:1->imprimante CENTRONICS détectée, b0:1-> STRATSED absent"; };
+#label { addr $0210;        name "TIMED"  ; comment "Horloge: 1/10 secondes"; };
+label { addr $0211;         name "TIMES"  ; comment "Horloge: secondes"; };
+label { addr $0212;         name "TIMEM"  ; comment "Horloge: minutes"; };
+label { addr $0213;         name "TIMEH"  ; comment "Horloge: heures"; };
+label { addr $0220; size 4; name "SCRX"   ; comment "Coordonnée X pour chaque fenêtre"; };
+label { addr $0224; size 4; name "SCRY"   ; comment "Coordonnée Y"; };
+label { addr $0228; size 4; name "SCRDX"  ; comment "Début de la fenêtre"; };
+label { addr $022c; size 4; name "SCRFX"; comment "Fin de la fenêtre"; };
+label { addr $0230; size 4; name "SCRDY"; comment "Début de la fenêtre"; };
+label { addr $0234; size 4; name "SCRFY"; comment "Fin de la fenêtre"; };
+label { addr $0248; size 1; name "FLGSCR"; comment "b7: curseur visible, b6: curseur fixe, b5: video inverse, b4: 38 colonnes, b3: prochain code ESC+xx, b2: sequende US en cours, b1: douvle hauteur, b0: compteur US"; };
+label { addr $024c; size 1; name "CURSCR"; comment "Caractère sous le curseur"; };
+label { addr $0275; size 1; name "FLGKBD"; comment "b7: majuscules, b6: bip clavier, b5: ESC=CTRL+T, b2-b1; langue (00: QWERTY, 01: AZERTY, 10: FRENCH), b0:1 gerer les touches de fonctions"; };
+label { addr $0278; size 1; name "KBDSHT"; comment "b7: CTRL, b6: FUNCT, b5: Joystick Gauche, b3: souris, b0; SHIFT"; };
+label { addr $029d; size 7; name "JCKTAB"; comment "Table des valeurs renvoyées par la souris ou le joystick"; };
+
+label { addr $027e; name "KBDCTC"; comment "b7:1 Ctrl+C"; };
+
+#label { addr $0286;        name "LPRX"  ; comment "Position dans la ligne"; };
+#label { addr $0287;        name "LPRY"  ; comment "Position dans la page"; };
+label { addr $0288;         name "LPRFX" ; comment "Largeur d'impression"; };
+#label { addr $028a;        name "FLGLPR"; comment "Parametrage imprimante. b7: prete, b6: pas gerer CRLF, b2: RS232/Centronics, b1: echo SCR, b0: pas de CR apres LF"; };
+#label { addr $02aa;        name "HRSPAT"; comment "Pattern"; };
+#label { addr $02ab;        name "HRSERR"; comment "Indicateur d'erreur dans les paramètres"; };
+#label { addr $02b6; size 4; name "IOTAB2"; comment "Table des IO pour le canal 2"; };
+
+#label { addr $02f0; size 4; name "CSRND"; comment "Nombre aleatoire (RANDOM)"; };
+
+label { addr $02f4; size 3; name "VNMI"  ; comment "Vecteur NMI (n° de banque, adresse)"; };
+label { addr $02fa; size 3; name "VIRQ"  ; comment "Vecteur IRQ"; };
+label { addr $02fd; size 3; name "VAPLIC"; comment "N° banque, adresse TELEMATIC->LANGAGE"; };
+
+
+############################################################
+# Page 03
+############################################################
+# VIA 1
+label { addr $0300;         name "V1DRB"; };
+label { addr $0301;         name "V1DRA"; };
+label { addr $0302;         name "V1DDRB"; };
+label { addr $0303;         name "V1DDRA"; };
+label { addr $0304; size 2; name "V1T1"; };
+label { addr $0306; size 2; name "V1T1L"; };
+label { addr $0308; size 2; name "V1T2"; };
+label { addr $030a; size 1; name "V1SR"; };
+label { addr $030b;         name "V1ACR"; };
+label { addr $030c;         name "V1PCR"; };
+label { addr $030d;         name "V1IFR"; };
+label { addr $030e;         name "V1ER"; };
+label { addr $030f;         name "V1DRAB"; };
+
+# FDC
+label { addr $0310;         name "FDCCR"; };
+label { addr $0311;         name "FDCTR"; };
+label { addr $0312;         name "FDCSR"; };
+label { addr $0313;         name "FDCDR"; };
+
+label { addr $0314;         name "CDRIVE"; };
+label { addr $0318;         name "FDCRQ"; };
+
+# ACIA
+label { addr $031c; size 1; name "ACIADR"; comment "ACIA Registre de Données"; };
+label { addr $031d; size 1; name "ACIASR"; comment "ACIA Registre d'état"; };
+label { addr $031e; size 1; name "ACIACR"; comment "ACIA Registre de Commande"; };
+label { addr $031f; size 1; name "ACIACT"; comment "ACIA Registre de Controle"; };
+
+# VIA 2
+label { addr $0320;         name "V2DRB"; };
+label { addr $0321;         name "V2DRA"; };
+label { addr $0322;         name "V2DDRB"; };
+label { addr $0323;         name "V2DDRA"; };
+label { addr $0324; size 2; name "V2T1"; };
+label { addr $0326; size 2; name "V2T1L"; };
+label { addr $0328; size 2; name "V2T2"; };
+label { addr $032a; size 1; name "V2SR"; };
+label { addr $032b;         name "V2ACR"; };
+label { addr $032c;         name "V2PCR"; };
+label { addr $032d;         name "V2IFR"; };
+label { addr $032e;         name "V2ER"; };
+label { addr $032f;         name "V2DRAB"; };
+
+
+############################################################
+# Page 04
+############################################################
+label { addr $040c;         name "EXBNK"; };
+label { addr $0414; size 3; name "VEXBNK"; };
+label { addr $0417;         name "BNKCID"; };
+#label { addr $0418;        name "L0418";  comment "Pointeur inter banques"; };
+
+
+############################################################
+# Page 05
+############################################################
+label { addr $0500;          name "DRIVE";  comment "N° de lecteur"; };
+label { addr $0501;          name"TRACK";   comment "N° de piste"; };
+label { addr $0502;          name "SECTOR"; comment "N° de secteur"; };
+label { addr $0503; size 11; name "RWBUF";  comment "Sector buffer"; };
+label { addr $050e;          name "ERRFDC"; };
+label { addr $050f;          name "ERRFLG"; comment "Autorisation erreur"; };
+label { addr $0510; size 2;  name "ERRVEC"; comment "Adresse de gestion des erreurs (LD618 ou LFE76)"; };
+label { addr $0512;          name "ERRNB";  comment "Erreur Stratsed"; };
+
+label { addr $0513;          name "SAVES"; };
+label { addr $0514; size 1;  name "POSNMP"; comment "Piste position d'un nom dans le catalogue"; };
+label { addr $0515; size 1;  name "POSNMS"; comment "Secteur position d'un nom dans le catalogue"; };
+label { addr $0516; size 1;  name "POSNMX"; comment "Index position d'un nom dans le catalogue"; };
+
+label { addr $0517; size 13; name "BUFNOM"; comment "Nom de fichier (drive+nom+extension)"; };
+
+label { addr $0528;          name "VASALO0"; comment "Flag lecture/écriture"; };
+label { addr $0529;          name "VASALO1"; comment "Flag lecture/écriture"; };
+label { addr $052a; size 2;  name "LOSALO"; };
+label { addr $052c;          name "FTYPE";  comment "Type du fichier"; };
+label { addr $052d; size 2;  name "DESALO"; comment "Adresse de début du fichier"; };
+label { addr $052f; size 2;  name "FISALO"; comment "Adresse de fin du fichier"; };
+label { addr $0531; size 2;  name "EXSALO"; comment "Adresse d'exécution"; };
+label { addr $0533; size 2;  name "LOCRE"; };
+label { addr $0535; size 2;  name "LOCREB"; };
+label { addr $0537; size 1;  name "DECREP"; };
+label { addr $0538; size 1;  name "DECRES"; };
+label { addr $0539; size 1;  name "NBCRE"; };
+label { addr $053A; size 1;  name "VCRE0"; };
+label { addr $053B; size 1;  name "BUFC0"; };
+
+
+label { addr $0542; size 2;  name "TAMPFC"; comment "Adresse de début des tampons fichier (initialisé à DOSBUFFERS par STARTUP)"; };
+label { addr $0544; size 2;  name "BITMFC"; comment "(word) BitMap des tampons logiques (même convention que la BitMap disquette, 0->occupé, 1->libre))"; };
+label { addr $0546;          name "INDFCB"; comment "Index dans la liste des secteurs de FCB du secteur FCB courant"; };
+label { addr $0547;          name "FICTYP"; comment "Type du fichier (00: séquentiel, $80: direct)"; };
+label { addr $0548;          name "FICNUM"; comment "Numéro logique du fichier (1 ou 2)"; };
+label { addr $0549;          name "NBFIC";  comment "Nombre de fichiers autorisés par FILE"; };
+label { addr $054a; size 2;  name "FICLON"; comment "Longueur du fichier"; };
+label { addr $054c;          name "XFIELD"; comment "Pour fichier accès direct: xfield=n° de banque, xfield+1=adresse"; };
+label { addr $054f; size 3;  name "RWTS";   comment "Vecteur de détournement RWTS"; };
+#label { addr $055d; size 3; name "EXTDEF"; comment "Extension par défaut"; };
+label { addr $0590; size 50; name "BUFEDT"; comment "Buffer Editeur de Texte"; };
+
+############################################################
+# Page 07
+############################################################
+label { addr $07ea; size 3;  name "TLMCAL"; comment "Call Telemon (BRK xx RTS ou JSR $BFE0)"; };
+label { addr $07fd; size 2;  name "VARBOT"; comment "Adresse de début des variables (Hyperbasic)"; };
+
+############################################################
+# Page 08
+############################################################
+label { addr $0800;          name "PROGRM"; comment "Zone programme"; };
+
+
+############################################################
+# Page 80
+############################################################
+label { addr $8000; size $0C00; name "BUFTXT"; comment "Buffer code VIDEOTEX (3ko maxi)"; };
+
+############################################################
+# Page 9x
+############################################################
+label { addr $9000; size $0400; name "BVDTAS"; comment "Buffer attributs VDT"; };
+label { addr $9400; size $0400; name "BVDTAT"; comment "Buffer couleur VDT"; };
+label { addr $9C00; size $0080; name "VDTDES"; comment "Travail et conversion G2"; };
+label { addr $9C80; size $0028; name "TABDBH"; comment "Buffer double hauteur VIDEOTEX (taille inconnue)"; };
+label { addr $9CC0; size $0008; name "PAGE"  ; comment "Buffer pour le nom de la page actuelle (variable PAGE$ basic)"; };
+
+
+############################################################
+# Page C0-D3
+############################################################
+range { start $c000; end $c07f; type bytetable; };
+
+range { start $c080; end $c0af; type addrtable; name "BUFBUF"; comment "Définition des buffers"; };
+
+range { start $c0b0; end $c0ff; type bytetable; };
+
+label { addr $c100; size $0100; name "BUF1"; };
+range { start $c100; end $c1ff; type bytetable; };
+
+label { addr $c200; size $0100; name "BUF2"; comment "Buffer BITMAP"; };
+range { start $c200; end $c2ff; type bytetable; };
+
+label { addr $c300; size $0100; name "BUF2b"; comment "Buffer BITMAP"; };
+range { start $c300; end $c3ff; type bytetable; };
+
+label { addr $c400; size $0100; name "BUF3"; comment "Buffer catalogue"; };
+range { start $c400; end $c4ff; type texttable; };
+
+label { addr $c500; name "BUFROU"; comment "Routines de gestion des buffers"; };
+range { start $c5c4; end $c67f; type bytetable; name "KBDBU"; comment "Buffer clavier"; };
+range { start $c680; end $c7ff; type bytetable; name "RSEBU"; comment "Buffer RS232 (entrée)"; };
+range { start $c800; end $c9ff; type bytetable; name "RSSBU"; comment "Buffer RS232 (sortie)"; };
+range { start $ca00; end $d1ff; type bytetable; name "LPRBU"; comment "Buffer imprimante"; };
+range { start $d200; end $d3ff; type bytetable; name "TD200"; };
+
+
+label { addr $d400; name "_RWTS"; comment "Routine de gestion des RWTS"; };
+
+############################################################
+# Page D6
+############################################################
+range { start $d61d; end $d620; type bytetable;  name "TD61D"; comment "Table indexée par DRIVE (utilisée par _RWTS)"; };
+
+
+
+############################################################
+# Routines Xxxxxx
+############################################################
+label { addr $f30a; name "_XMERGE";  comment "Merge (Hyperbasic)"; };
+label { addr $eea1; name "_XFST";    comment "Prendre infos fichier (FICNUM)"; };
+label { addr $f01c; name "_XSPUT";   comment "Ecrire (séquentiel)"; };
+label { addr $f082; name "_XSTAKE";  comment "Lire (séquntiel)"; };
+label { addr $eedd; name "_XOPEN";   comment "Ouvre un fichier (BUFNOM, FICNUM)"; };
+label { addr $efe9; name "_XCLOSE";  comment "Ferme un fichier (FICNUM)"; };
+label { addr $f14e; name "_XTAKE";   comment "Prendre enregistrement (fichier FICUM)"; };
+label { addr $f14c; name "_XPUT";    comment "Ecrire enregistrement (fichier FICNUM)"; };
+label { addr $f086; name "_XAPPEN";  comment "Placer index séquentiel à la fin du fichier"; };
+label { addr $f138; name "_XREWIN";  comment "Placer index séquentiel au début du fichier"; };
+label { addr $f08a; name "_XJUMP";   comment "Sauter enregistrement (fichier séquentiel FICNUM)"; };
+label { addr $ec59; name "_XLGBUF";  comment "Calcul longueur du tampon de fichier (FICNUM)"; };
+label { addr $d995; name "_XERVEC";  comment "Restaure le vecteur d'erreur"; };
+label { addr $db35; name "_XESAVE";  comment "Sauve l'écran TEXT ou HIRES (selon FLGTEL)"; };
+label { addr $e6bf; name "_XCOPY";   comment "Copie de fichiers"; };
+label { addr $e137; name "_XDNAME";  comment "Change le nom de la disquette"; };
+label { addr $e310; name "_XUPDAT";  comment "Recopie le DOS en mémoire"; };
+label { addr $e351; name "_XFORMA";  comment "Formate la disquette DRIVE"; };
+label { addr $e027; name "_XREN";    comment "Change le nom d'un fichier"; };
+label { addr $df33; name "_XDELBK";  comment "DELBAK"; };
+label { addr $df40; name "_XDELN";   comment "DEL"; };
+label { addr $e0e5; name "_XPROT";   comment "PROT"; };
+label { addr $e0e8; name "_XUNPROT"; comment "UNPROT"; };
+label { addr $da72; name "_XDIRN";   comment "Catalogue (nom -> BUFNOM)"; };
+label { addr $ea54; name "_XBKP";    comment "Backup du lecteur BUFNOM vers le lecteur BUFNOM+1"; };
+label { addr $e204; name "_XINIT";   comment "Initialise la disquette dans le lecteur DRIVE"; };
+label { addr $d612; name "_XERREU";  comment "Génère l'erreur (X)"; };
+label { addr $dccb; name "_XLOAD";   comment "Charge un fichier"; };
+label { addr $db22; name "_XDEFSA";  comment "Valeurs par défaut pour SAVE"; };
+label { addr $dcb6; name "_XDEFLO";  comment "Valeurs par défaut pour LOAD"; };
+label { addr $db57; name "_XSAVE";   comment "Sauve un fichier"; };
+label { addr $de4f; name "_XNOMDE";  comment "Détruit un fichier"; };
+label { addr $d923; name "_XCREAY";  comment "Créé une table P/S de AY secteurs"; };
+label { addr $d90b; name "_XDETSE";  comment "Marque le secteur Y piste A comme utilisé"; };
+label { addr $d856; name "_XLIBSE";  comment "Marque le secteur Y piste A comme libre"; };
+label { addr $d753; name "_XTRVCA";  comment "???"; };
+label { addr $d727; name "_XTRVNM";  comment "Cherche un fichier"; };
+label { addr $d73b; name "_XTRVNX";  comment "Cherche le fichier suivant"; };
+label { addr $d701; name "_XCABU";   comment "Transfert catalogue -> BUFNOM"; };
+label { addr $d6e8; name "_XBUCA";   comment "Transfert BUFNOM ->  catalogue"; };
+label { addr $d6c8; name "_XBUF1";   comment "Initialise le buffer 1 avec des 0"; };
+label { addr $d69a; name "_XSVSEC";  comment "Ecrit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
+label { addr $d694; name "_XSAY";    comment "Ecrit le secteur Y piste A selon DRIVE et RWBUF"; };
+label { addr $d687; name "_XSBUF1";  comment "Ecrit BUF1 dans le secteur Y piste A"; };
+label { addr $d684; name "_XSBUF2";  comment "Ecrit BUF2 dans le secteur Y piste A"; };
+label { addr $d68a; name "_XSBUF3";  comment "Ecrit BUF3 dans le secteur Y piste A"; };
+label { addr $d666; name "_XSCAT";   comment "Ecrit le secteur catalogue selon POSNMP et POSNMS"; };
+
+label { addr $d656; name "_XPRSEC";  comment "Lit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
+label { addr $d63d; name "_XPBUF1";  comment "Lit le secteur Y piste A dans BUF1"; };
+label { addr $d621; name "_XPMAP";   comment "Lit le secteur BITMAP"; };
+
+#                     Vecteurs spécifique TELEMATIC
+label { addr $fd8b; name "_XCTMENA"; comment "Menage (cartouche TELEMATIC)"; };
+label { addr $fda6; name "_XCTDUPL"; comment "Dupliquer (cartouche TELEMATIC)"; };
+label { addr $fd52; name "_XCTRECU"; comment "Récupérer (cartouche TELEMATIC)"; };
+label { addr $fd4c; name "_XCTDETR"; comment "Détruire (cartouche TELEMATIC)"; };
+label { addr $f4a5; name "_XCTEMET"; comment "Emission (cartouche TELEMATIC)"; };
+label { addr $fdcd; name "_XCTSELL"; comment "Sélection Lecteur (cartouche TELEMATIC)"; };
+label { addr $fd3b; name "_XCTINIT"; comment "Initialiser (cartouche TELEMATIC)"; };
+label { addr $fd26; name "_XCTECRI"; comment "Ecrire (cartouche TELEMATIC)"; };
+label { addr $fd32; name "_XCTLIRE"; comment "Lire (cartouche TELEMATIC)"; };
+
+############################################################
+# Page D9
+############################################################
+range { start $d9a5; end $d9cc; type bytetable; name "TD9A5"; };
+
+range { start $d9cd; end $da4f; type texttable; name "SD9CD"; };
+label { addr $d9d8; name "SD9D8"; };
+label { addr $d9e8; name "SD9E8"; };
+label { addr $d9f8; name "SD9F8"; };
+label { addr $da02; name "SDA02"; };
+label { addr $da09; name "SDA09"; };
+label { addr $da11; name "SDA11"; };
+label { addr $da1b; name "SDA1B"; };
+label { addr $da2d; name "SDA2D"; };
+label { addr $da45; name "SDA45"; };
+
+range { start $db07; end $db21; type texttable; name "SDB07"; };
+label { addr $db17; name "SDB17"; };
+label { addr $db19; name "SDB19"; };
+label { addr $db1f; name "SDB1F"; };
+
+range { start $df0f; end $df1b; type texttable; name "SDF0F"; };
+
+range { start $dcb3; end $dcb5; type texttable; name "SDCB3"; };
+
+range { start $df27; end $df32; type texttable; name "SDF27"; };
+
+############################################################
+# Page Ex
+############################################################
+range { start $e112; end $e136; type texttable; name "SE112"; };
+label { addr $e11b; name "SE11B"; };
+label { addr $e124; name "SE124"; };
+label { addr $e131; name "SE131"; };
+
+range { start $e161; end $e1f5; type texttable; name "SE161"; };
+label { addr $e197; name "SE197"; };
+label { addr $e1b4; name "SE1B4"; };
+label { addr $e1b9; name "SE1B9"; };
+label { addr $e1c9; name "SE1C9"; };
+label { addr $e1cc; name "SE1CC"; };
+label { addr $e1de; name "SE1DE"; };
+
+label { addr $e4f3; size 2; name "LE4F3"; comment "Modification de l'opérande depuis LE21F"; };
+range { start $e4f3; end $e4f4; type code; };
+
+label { addr $e528; size 2; name "LE528"; comment "Modification de l'opérande depuis LE233"; };
+range { start $e528; end $e529; type code; };
+
+label { addr $e538; size 4; name "TE538"; };
+range { start $e538; end $e55f; type bytetable; };
+
+range { start $e560; end $e677; type texttable; };
+label { addr $e560; size 3; name "SE560"; comment "SE560+2 modifié depuis LE3C2"; };
+label { addr $e583; name "SE583"; };
+label { addr $e5a0; name "SE5A0"; };
+label { addr $e5c0; name "SE5C0"; };
+label { addr $e5c6; name "SE5C6"; };
+label { addr $e5d9; name "SE5D9"; };
+label { addr $e5e7; name "SE5E7"; };
+label { addr $e5ef; name "SE5EF"; };
+label { addr $e5fd; name "SE5FD"; };
+label { addr $e608; name "SE608"; };
+label { addr $e60a; name "SE60A"; };
+label { addr $e60f; name "SE60F"; };
+label { addr $e621; name "SE621"; };
+label { addr $e62d; name "SE62D"; };
+label { addr $e635; name "SE635"; };
+label { addr $e63b; name "SE63B"; };
+label { addr $e649; name "SE649"; };
+label { addr $e64e; name "SE64E"; };
+
+range { start $ea15; end $ea53; type texttable; name "SEA15"; };
+label { addr $ea1d; name "SEA1D"; };
+label { addr $ea30; name "SEA30"; };
+label { addr $ea4c; name "SEA4C"; };
+
+range { start $eecf; end $eed1; type texttable; name "SEECF"; };
+
+label { addr $f38c; name "LF38C"; comment "Remplacer LF484 par LF485-1"; };
+
+label { addr $f475; name "LF475"; comment "Appelle la fonction (Y) de la banque 6 (Hyperbasic)"; };
+
+#label { addr $f482; size 3; name "LF482"; };
+range { start $f482; end $f484; type code; };
+label { addr $f485; name "LF485"; comment "Copié en $BFDF par _XMERGE (en LF38C)"; };
+
+range { start $f53d; end $f547; type texttable; name "SF53D"; };
+
+range { start $f90b; end $f90f; type texttable; name "SF90B"; };
+
+range { start $f95d; end $f964; type bytetable; name "TF95D"; };
+
+label { addr $f8c0; name "LF8C0"; comment "Appelle la fonction XTGET de la banque 3 (Telematic)"; };
+label { addr $f8c3; name "LF8C3"; comment "Appelle la fonction XTINPU de la banque 3 (Telematic)"; };
+
+range { start $fa02; end $fd25; type texttable; name "SFA02"; comment "Messages pour la gestion des BAL"; };
+label { addr $fa1b; name "SFA1B"; };
+label { addr $fa2c; name "SFA2C"; };
+label { addr $fa38; name "SFA38"; };
+label { addr $fa48; name "SFA48"; };
+label { addr $fac1; name "SFAC1"; };
+label { addr $fad2; name "SFAD2"; };
+label { addr $fae4; name "SFAE4"; };
+label { addr $faf7; name "SFAF7"; };
+label { addr $fb39; name "SFB39"; };
+label { addr $fb4c; name "SFB4C"; };
+label { addr $fb67; name "SFB67"; };
+label { addr $fb7e; name "SFB7E"; };
+label { addr $fb92; name "SFB92"; };
+label { addr $fb97; name "SFB97"; };
+label { addr $fc00; name "SFC00"; };
+label { addr $fc04; name "SFC04"; };
+label { addr $fc28; name "SFC28"; };
+label { addr $fc39; name "SFC39"; };
+label { addr $fcc7; name "SFCC7"; };
+
+range { start $fd88; end $fd8a; type texttable; name "SFD88"; };
+range { start $fdbc; end $fdcc; type texttable; name "SFDBC"; };
+
+############################################################
+# Page FE
+############################################################
+range { start $fe9f; end $fef6; type texttable; };
+label { addr $fe9f; size 4; name "SFE9F"; comment "Place le curseur en ligne 0 colonne 1"; };
+label { addr $fea3;         name "SFEA3"; };
+label { addr $feb6;         name "SFEB6"; };
+label { addr $feca;         name "SFECA"; };
+label { addr $fed9;         name "SFED9"; };
+label { addr $fee8;         name "SFEE8"; };
+
+range { start $fef7; end $fefb; type bytetable; name "SFEF7"; comment "Place le curseur en ligne 0 colonne 1 et efface la ligne"; };
+range { start $fefc; end $ff0d; type addrtable; name "TFEFC"; comment "Table pour les messages d'erreurs"; };
+
+############################################################
+# Page FF
+############################################################
+
+#                     Vecteurs STRATSED
+
+label { addr $FF0E; name "XMERGE";  comment "Merge (Hyperbasic)";};
+label { addr $FF11; name "XFST";    comment "Prendre les infos delon FICNUM"; };
+label { addr $FF14; name "XSPUT";   comment "Ecrire (séquentiel)"; };
+label { addr $FF17; name "XSTAKE";  comment "Lire (séquentiel)"; };
+label { addr $FF1A; name "XOPEN";   comment "Ouvre fichier (nom BUFNOM, numméro FICNUM)"; };
+label { addr $FF1D; name "XCLOSE";  comment "Ferme fichier de numéro FICNUM"; };
+label { addr $FF20; name "XTAKE";   comment "Prendre enregistrement (fichier FICNUM)"; };
+label { addr $FF23; name "XPUT";    comment "Ecrire enregistrement (fichier FICNUM)"; };
+label { addr $FF26; name "XAPPEN";  comment "Placer index séquentiel  FICNUM en fin de fichier"; };
+label { addr $FF29; name "XREWIN";  comment "Placer index séquentiel FICNUM au début du fichier"; };
+label { addr $FF2c; name "XJUMP";   comment "Sauter enregistrement (fichier FICNUM)"; };
+label { addr $FF2F; name "XLGBUF";  comment "Calcule lg tampon fichiers (FICNUM)"; };
+label { addr $FF32; name "XERVEC";  comment "Restaure le vecteur d'erreur"; };
+label { addr $FF35; name "XESAVE";  comment "Sauve l'écran TEXT ou HIRES (selon FLGTEL)"; };
+label { addr $FF38; name "XCOPY";   comment "Copie de fichiers"; };
+label { addr $FF3B; name "XDNAME";  comment "Change le nom de la disquette"; };
+label { addr $FF3E; name "XSTATU";  comment "Non implémenté dans STRATSED 2.0x"; };
+label { addr $FF41; name "XUPDAT";  comment "Recopie le DOS en mémoire"; };
+label { addr $FF44; name "XFORMA";  comment "Formatte la disquette"; };
+label { addr $FF47; name "XREN";    comment "Renomme un fichier"; };
+label { addr $FF4A; name "XDELBK";  comment "DELBAK";};
+label { addr $FF4D; name "XDELN";   comment "DEL"; };
+label { addr $FF50; name "XPROT";   comment "PROT"; };
+label { addr $FF53; name "XUNPROT"; comment "UNPROT"; };
+label { addr $FF56; name "XDIRN";   comment "DIR"; };
+label { addr $FF59; name "XBKP";    comment "Backup du lecteur BUFNOM vers le lecteur BUFNOM+1"; };
+label { addr $FF5C; name "XINITI";  comment "INIT"; };
+label { addr $FF5F; name "XERREU";  comment "Génère une erreur"; };
+label { addr $FF62; name "XLOAD";   comment "LOAD"; };
+label { addr $FF65; name "XDEFSA";  comment "Valeurs par défaut SAVE"; };
+label { addr $FF68; name "XDEFLO";  comment "Valeurs par défaut LOAD"; };
+label { addr $FF6B; name "XSAVE";   comment "SAVE"; };
+label { addr $FF6E; name "XNOMDE";  comment "Detruit un fichier";  };
+label { addr $FF71; name "XCREAY";  comment "Créé une table P/S de AY secteurs"; };
+
+label { addr $FF74; name "XDETSE";  comment "Marque le sesteur Y piste A comme occupé"; };
+label { addr $FF77; name "XLIBSE";  comment "Marque le secteur Y piste A comme libre"; };
+label { addr $FF7A; name "XTRVCA"; };
+label { addr $FF7D; name "XTRVNM";  comment "Cherche un fichier"; };
+label { addr $FF80; name "XTRVNX";  comment "Cherche le fichier suivant"; };
+label { addr $FF83; name "XCABU";   comment "Transfert catalogue -> BUFNOM"; };
+label { addr $FF86; name "XBUCA";   comment "Transfert BUFNOM -> catalogue"; };
+label { addr $FF89; name "XVBUF1";  comment "Rempli BUF1 avec des 0"; };
+label { addr $FF8C; name "XSVSEC";  comment "Ecrit un secteur"; };
+label { addr $FF8F; name "XSAY";    comment "Ecrit le secteur Y piste A"; };
+label { addr $FF92; name "XSBUF1";  comment "Ecrit BUF1 dans le secteur Y piste A"; };
+label { addr $FF95; name "XSBUF2";  comment "Ecrit BUF2 dans le secteur Y piste A"; };
+label { addr $FF98; name "XSBUF3";  comment "Ecrit BUF3 dans le secteur Y piste A"; };
+label { addr $FF9B; name "XSCAT";   comment "Ecrit le secteur catalogue"; };
+label { addr $FFA1; name "XPRSEC";  comment "Lit un secteur"; };
+label { addr $FFA4; name "XPBUF1";  comment "Lit le secteur Y piste A dans BUF1"; };
+label { addr $FFA7; name "XPMAP";   comment "Lit le secteur de BITMAP"; };
+label { addr $FFAA; name "XWRTS";   comment "Envoie la commande X au FDC"; };
+
+#                     Vecteurs spécifique TELEMATIC
+label { addr $FFAD; name "XCTMENA"; comment "Menage (cartouche TELEMATIC)"; };
+label { addr $FFB0; name "XCTDUPL"; comment "Dupliquer (cartouche TELEMATIC)"; };
+label { addr $FFB3; name "XCTRECU"; comment "Récupérer (cartouche TELEMATIC)"; };
+label { addr $FFB6; name "XCTDETR"; comment "Détruire (cartouche TELEMATIC)"; };
+label { addr $FFB9; name "XCTEMET"; comment "Emission (cartouche TELEMATIC)"; };
+label { addr $FFBC; name "XCTSELL"; comment "Selection Lecteur (cartouche TELEMATIC)"; };
+label { addr $FFBF; name "XCTINIT"; comment "Initialiser (cartouche TELEMATIC)"; };
+label { addr $FFC2; name "XCTECRI"; comment "Ecrire (cartouche TELEMATIC)"; };
+label { addr $FFC5; name "XCTLIRE"; comment "Lire (cartouche TELEMATIC)"; };
+
+
+range { start $ffc8; end $fff7; type texttable; name "ROMSIG"; };
+
+range { start $fff8; end $fff9; type addrtable; name "SIG_vector"; };
+range { start $fffa; end $fffb; type addrtable; name "NMI_vector"; };
+range { start $fffc; end $fffd; type addrtable; name "RST_vector"; };
+range { start $fffe; end $ffff; type addrtable; name "IRQ_vector"; };
