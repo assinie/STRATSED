@@ -356,18 +356,32 @@ range { start $d200; end $d3ff; type bytetable; name "TD200"; };
 # Page D4
 ############################################################
 label { addr $d400; name "_RWTS"; comment "Routine de gestion des RWTS"; };
+label { addr $d43a; name "LD43A"; comment "Affiche une erreur FDC"; };
 
 
 ############################################################
 # Page D6
 ############################################################
 range { start $d61d; end $d620; type bytetable;  name "TD61D"; comment "Table indexée par DRIVE (utilisée par _RWTS)"; };
+label { addr $d640; name "__PBUF2";  comment "Lit le secteur Y piste A dans BUF2"; };
+label { addr $d643; name "__PBUF2b"; comment "Lit le secteur Y piste A dans BUF2b"; };
+label { addr $d646; name "__PBUF3";  comment "Lit le secteur Y piste A dans BUF3"; };
+label { addr $d681; name "__SBUF2b"; comment "Ecrit BUF2b dans le secteur Y piste A"; };
+label { addr $d6c2; name "__BUF2";   comment "Initialise le buffer 2 avec des 0"; };
+label { addr $d6cb; name "__BUF2b";  comment "Initialise le buffer 2b avec des 0"; };
+label { addr $d6ce; name "__BUF3";   comment "Initialise le buffer 3 avec des 0"; };
+
+
+############################################################
+# Page D7
+############################################################
+label { addr $d7a2; name "LD7A2";   comment "Cherche le premier secteur catalogue non plein"; };
 
 
 ############################################################
 # Page D9
 ############################################################
-range { start $d9a5; end $d9c1; type bytetable; name "TD9A5"; };
+range { start $d9a5; end $d9c1; type bytetable; name "TD9A5"; comment "Liste des secteurs du catalogue (les 13 premiers piste 20, les 16 suivants piste 21)"; };
 
 range { start $d9c2; end $da4f; type texttable; name "SD9C2"; };
     label { addr $d9c6; name "SD9C6"; };
@@ -602,7 +616,7 @@ label { addr $FF71; name "XCREAY";  comment "Créé une table P/S de AY secteurs
 
 label { addr $FF74; name "XDETSE";  comment "Marque le sesteur Y piste A comme occupé"; };
 label { addr $FF77; name "XLIBSE";  comment "Marque le secteur Y piste A comme libre"; };
-label { addr $FF7A; name "XTRVCA"; };
+label { addr $FF7A; name "XTRVCA";  comment "Cherche le premier secteur non plein du catalogue"; };
 label { addr $FF7D; name "XTRVNM";  comment "Cherche un fichier"; };
 label { addr $FF80; name "XTRVNX";  comment "Cherche le fichier suivant"; };
 label { addr $FF83; name "XCABU";   comment "Transfert catalogue -> BUFNOM"; };
@@ -616,7 +630,7 @@ label { addr $FF98; name "XSBUF3";  comment "Ecrit BUF3 dans le secteur Y piste 
 label { addr $FF9B; name "XSCAT";   comment "Ecrit le secteur catalogue"; };
 label { addr $FFA1; name "XPRSEC";  comment "Lit un secteur"; };
 label { addr $FFA4; name "XPBUF1";  comment "Lit le secteur Y piste A dans BUF1"; };
-label { addr $FFA7; name "XPMAP";   comment "Lit le secteur de BITMAP"; };
+label { addr $FFA7; name "XPMAP";   comment "Lit les 2 secteurs BITMAP"; };
 label { addr $FFAA; name "XWRTS";   comment "Envoie la commande X au FDC"; };
 
 #                     Vecteurs spécifique TELEMATIC
@@ -670,7 +684,7 @@ label { addr $de4f; name "_XNOMDE";  comment "Détruit un fichier"; };
 label { addr $d923; name "_XCREAY";  comment "Créé une table P/S de AY secteurs"; };
 label { addr $d90b; name "_XDETSE";  comment "Marque le secteur Y piste A comme utilisé"; };
 label { addr $d856; name "_XLIBSE";  comment "Marque le secteur Y piste A comme libre"; };
-label { addr $d753; name "_XTRVCA";  comment "???"; };
+label { addr $d753; name "_XTRVCA";  comment "Cherche le premier secteur non plein du catalogue"; };
 label { addr $d727; name "_XTRVNM";  comment "Cherche un fichier"; };
 label { addr $d73b; name "_XTRVNX";  comment "Cherche le fichier suivant"; };
 label { addr $d701; name "_XCABU";   comment "Transfert catalogue -> BUFNOM"; };
@@ -685,7 +699,7 @@ label { addr $d666; name "_XSCAT";   comment "Ecrit le secteur catalogue selon P
 
 label { addr $d656; name "_XPRSEC";  comment "Lit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF"; };
 label { addr $d63d; name "_XPBUF1";  comment "Lit le secteur Y piste A dans BUF1"; };
-label { addr $d621; name "_XPMAP";   comment "Lit le secteur BITMAP"; };
+label { addr $d621; name "_XPMAP";   comment "Lit les 2 secteurs BITMAP"; };
 
 #                     Vecteurs spécifique TELEMATIC
 label { addr $fd8b; name "_XCTMENA"; comment "Menage (cartouche TELEMATIC)"; };

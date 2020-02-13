@@ -1,5 +1,5 @@
 ; da65 V2.18 - Git 28584b31
-; Created:    2020-02-04 18:22:58
+; Created:    2020-02-04 22:09:45
 ; Input file: original/stratsed.bin
 ; Page:       1
 
@@ -1019,6 +1019,7 @@ LD437:
         jmp     LD4D1                           ; D437 4C D1 D4
 
 ; ----------------------------------------------------------------------------
+; Affiche une erreur FDC
 LD43A:
         cli                                     ; D43A 58
         ldx     #$00                            ; D43B A2 00
@@ -1366,16 +1367,16 @@ LD61C:
 TD61D:
         .byte   $84,$A4,$C4,$E4                 ; D61D 84 A4 C4 E4
 ; ----------------------------------------------------------------------------
-; Lit le secteur BITMAP
+; Lit les 2 secteurs BITMAP
 _XPMAP:
         php                                     ; D621 08
         jsr     LDF1C                           ; D622 20 1C DF
         lda     #$14                            ; D625 A9 14
         ldy     #$02                            ; D627 A0 02
-        jsr     LD640                           ; D629 20 40 D6
+        jsr     __PBUF2                         ; D629 20 40 D6
         iny                                     ; D62C C8
         lda     #$14                            ; D62D A9 14
-        jsr     LD643                           ; D62F 20 43 D6
+        jsr     __PBUF2b                        ; D62F 20 43 D6
         plp                                     ; D632 28
         ldx     BUF2                            ; D633 AE 00 C2
         inx                                     ; D636 E8
@@ -1389,13 +1390,16 @@ _XPMAP:
 _XPBUF1:
         ldx     #>BUF1                          ; D63D A2 C1
         .byte   $2C                             ; D63F 2C
-LD640:
+; Lit le secteur Y piste A dans BUF2
+__PBUF2:
         ldx     #>BUF2                          ; D640 A2 C2
         .byte   $2C                             ; D642 2C
-LD643:
-        ldx     #>BUF2b                          ; D643 A2 C3
+; Lit le secteur Y piste A dans BUF2b
+__PBUF2b:
+        ldx     #>BUF2b                         ; D643 A2 C3
         .byte   $2C                             ; D645 2C
-LD646:
+; Lit le secteur Y piste A dans BUF3
+__PBUF3:
         ldx     #>BUF3                          ; D646 A2 C4
         stx     RWBUF+1                         ; D648 8E 04 05
         ldx     #$00                            ; D64B A2 00
@@ -1407,6 +1411,7 @@ LD650:
 ; Lit un secteur selon DRIVE, PISTE, SECTEUR et RWBUF
 _XPRSEC:
         ldx     #$88                            ; D656 A2 88
+
 LD658:
         jsr     RWTS                            ; D658 20 4F 05
         beq     LD6C1                           ; D65B F0 64
@@ -1432,12 +1437,13 @@ LD66E:
         jsr     _XSBUF2                         ; D676 20 84 D6
         iny                                     ; D679 C8
         lda     #$14                            ; D67A A9 14
-        jsr     LD681                           ; D67C 20 81 D6
+        jsr     __SBUF2b                        ; D67C 20 81 D6
         plp                                     ; D67F 28
         rts                                     ; D680 60
 
 ; ----------------------------------------------------------------------------
-LD681:
+; Ecrit BUF2b dans le secteur Y piste A
+__SBUF2b:
         ldx     #>BUF2b                         ; D681 A2 C3
         .byte   $2C                             ; D683 2C
 
@@ -1468,13 +1474,13 @@ _XSVSEC:
         ldx     #$A8                            ; D69A A2 A8
         bne     LD658                           ; D69C D0 BA
 
+; ----------------------------------------------------------------------------
 LD69E:
         lda     #<BUF1                          ; D69E A9 00
         ldy     #>BUF1                          ; D6A0 A0 C1
         sta     RWBUF                           ; D6A2 8D 03 05
         sty     RWBUF+1                         ; D6A5 8C 04 05
         bne     _XSVSEC                         ; D6A8 D0 F0
-
 LD6AA:
         ldx     POSNMX                          ; D6AA AE 16 05
         ldy     #$08                            ; D6AD A0 08
@@ -1490,13 +1496,13 @@ LD6B8:
         inx                                     ; D6BD E8
         dey                                     ; D6BE 88
         bpl     LD6B8                           ; D6BF 10 F7
-
 LD6C1:
         rts                                     ; D6C1 60
 
 ; ----------------------------------------------------------------------------
-LD6C2:
-        jsr     LD6CB                           ; D6C2 20 CB D6
+; Initialise le buffer 2 avec des 0
+__BUF2:
+        jsr     __BUF2b                         ; D6C2 20 CB D6
         lda     #>BUF2                          ; D6C5 A9 C2
         .byte   $2C                             ; D6C7 2C
 
@@ -1504,10 +1510,14 @@ LD6C2:
 _XBUF1:
         lda     #>BUF1                          ; D6C8 A9 C1
         .byte   $2C                             ; D6CA 2C
-LD6CB:
+
+; Initialise le buffer 2b avec des 0
+__BUF2b:
         lda     #>BUF2b                         ; D6CB A9 C3
         .byte   $2C                             ; D6CD 2C
-LD6CE:
+
+; Initialise le buffer 3 avec des 0
+__BUF3:
         lda     #>BUF3                          ; D6CE A9 C4
         sta     TD1                             ; D6D0 85 4E
         lda     #$00                            ; D6D2 A9 00
@@ -1524,7 +1534,7 @@ LD6D9:
 ; ----------------------------------------------------------------------------
         lda     POSNMP                          ; D6DF AD 14 05
         ldy     POSNMS                          ; D6E2 AC 15 05
-        jsr     LD646                           ; D6E5 20 46 D6
+        jsr     __PBUF3                         ; D6E5 20 46 D6
 
 ; Transfert BUFNOM ->  catalogue
 _XBUCA:
@@ -1536,13 +1546,12 @@ LD6ED:
         inx                                     ; D6F3 E8
         iny                                     ; D6F4 C8
         bne     LD6ED                           ; D6F5 D0 F6
-
         rts                                     ; D6F7 60
 
 ; ----------------------------------------------------------------------------
         lda     POSNMP                          ; D6F8 AD 14 05
         ldy     POSNMS                          ; D6FB AC 15 05
-        jsr     LD646                           ; D6FE 20 46 D6
+        jsr     __PBUF3                         ; D6FE 20 46 D6
 
 ; Transfert catalogue -> BUFNOM
 _XCABU:
@@ -1586,7 +1595,7 @@ LD72A:
 LD72E:
         sta     POSNMP                          ; D72E 8D 14 05
         sty     POSNMS                          ; D731 8C 15 05
-        jsr     LD646                           ; D734 20 46 D6
+        jsr     __PBUF3                         ; D734 20 46 D6
         ldx     #$10                            ; D737 A2 10
         bne     LD742                           ; D739 D0 07
 
@@ -1609,7 +1618,7 @@ LD742:
         rts                                     ; D752 60
 
 ; ----------------------------------------------------------------------------
-; ???
+; Cherche le premier secteur non plein du catalogue
 _XTRVCA:
         jsr     LD7A2                           ; D753 20 A2 D7
         bne     LD78F                           ; D756 D0 37
@@ -1638,7 +1647,7 @@ LD76F:
         ldy     BUF3+1                          ; D781 AC 01 C4
         sta     POSNMP                          ; D784 8D 14 05
         sty     POSNMS                          ; D787 8C 15 05
-        jsr     LD6CE                           ; D78A 20 CE D6
+        jsr     __BUF3                          ; D78A 20 CE D6
         ldx     #$10                            ; D78D A2 10
 LD78F:
         txa                                     ; D78F 8A
@@ -1652,13 +1661,14 @@ LD78F:
         rts                                     ; D7A1 60
 
 ; ----------------------------------------------------------------------------
+; Cherche le premier secteur catalogue non plein
 LD7A2:
         lda     #$14                            ; D7A2 A9 14
         ldy     #$04                            ; D7A4 A0 04
 LD7A6:
         sta     POSNMP                          ; D7A6 8D 14 05
         sty     POSNMS                          ; D7A9 8C 15 05
-        jsr     LD646                           ; D7AC 20 46 D6
+        jsr     __PBUF3                         ; D7AC 20 46 D6
         ldx     BUF3+2                          ; D7AF AE 02 C4
         bne     LD7BC                           ; D7B2 D0 08
 
@@ -1759,15 +1769,15 @@ _XLIBSE:
 ; ----------------------------------------------------------------------------
 LD864:
         txa                                     ; D864 8A
+
         bne     LD86A                           ; D865 D0 03
-
         dec     BUF2+3                          ; D867 CE 03 C2
-
 LD86A:
         dec     BUF2+2                          ; D86A CE 02 C2
-        lda     #$10                            ; D86D A9 10
+
+        lda     #<(BUF2+10)                     ; D86D A9 10
         sta     TD0                             ; D86F 85 4D
-        lda     #$C2                            ; D871 A9 C2
+        lda     #>(BUF2+10)                     ; D871 A9 C2
         lsr     INDIC0                          ; D873 46 55
         sta     TD1                             ; D875 85 4E
 LD877:
@@ -2008,6 +2018,7 @@ _XERVEC:
         rts                                     ; D9A4 60
 
 ; ----------------------------------------------------------------------------
+; Liste des secteurs du catalogue (les 13 premiers piste 20, les 16 suivants piste 21)
 TD9A5:
         .byte   $04,$07,$0A,$0D,$10,$05,$08,$0B ; D9A5 04 07 0A 0D 10 05 08 0B
         .byte   $0E,$06,$09,$0C,$0F,$01,$04,$07 ; D9AD 0E 06 09 0C 0F 01 04 07
@@ -3003,7 +3014,7 @@ LDFF2:
         dec     BUF2+8                          ; DFF5 CE 08 C2
         lda     DECREP                          ; DFF8 AD 37 05
         ldy     DECRES                          ; DFFB AC 38 05
-        jsr     LD646                           ; DFFE 20 46 D6
+        jsr     __PBUF3                         ; DFFE 20 46 D6
         lda     BUF3                            ; E001 AD 00 C4
         pha                                     ; E004 48
         lda     BUF3+1                          ; E005 AD 01 C4
@@ -3118,7 +3129,7 @@ LE0A0:
         sty     POSNMS                          ; E0A7 8C 15 05
         ldx     TD5                             ; E0AA A6 52
         stx     POSNMX                          ; E0AC 8E 16 05
-        jsr     LD646                           ; E0AF 20 46 D6
+        jsr     __PBUF3                         ; E0AF 20 46 D6
         plp                                     ; E0B2 28
         bne     LE0C9                           ; E0B3 D0 14
 
@@ -3304,7 +3315,7 @@ LE203:
 ; Initialise la disquette dans le lecteur DRIVE
 _XINIT:
         jsr     LE1F6                           ; E204 20 F6 E1
-        jsr     LD6C2                           ; E207 20 C2 D6
+        jsr     __BUF2                          ; E207 20 C2 D6
         lda     DESALO+1                        ; E20A AD 2E 05
         bit     FISALO+1                        ; E20D 2C 30 05
         bmi     LE214                           ; E210 30 02
@@ -3355,7 +3366,7 @@ LE253:
         sta     BUF2                            ; E25C 8D 00 C2
         inx                                     ; E25F E8
         stx     BUF2+8                          ; E260 8E 08 C2
-        jsr     LD6CE                           ; E263 20 CE D6
+        jsr     __BUF3                          ; E263 20 CE D6
         lda     #$10                            ; E266 A9 10
         sta     BUF3+2                          ; E268 8D 02 C4
         lda     BUF2+9                          ; E26B AD 09 C2
@@ -8188,6 +8199,7 @@ XLIBSE:
         jmp     _XLIBSE                         ; FF77 4C 56 D8
 
 ; ----------------------------------------------------------------------------
+; Cherche le premier secteur non plein du catalogue
 XTRVCA:
         jmp     _XTRVCA                         ; FF7A 4C 53 D7
 
@@ -8260,7 +8272,7 @@ XPBUF1:
         jmp     _XPBUF1                         ; FFA4 4C 3D D6
 
 ; ----------------------------------------------------------------------------
-; Lit le secteur de BITMAP
+; Lit les 2 secteurs BITMAP
 XPMAP:
         jmp     _XPMAP                          ; FFA7 4C 21 D6
 
