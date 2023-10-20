@@ -185,6 +185,13 @@ TABDBH          := $9C80                        ; Buffer double hauteur VIDEOTEX
 PAGE            := $9CC0                        ; Buffer pour le nom de la page actuelle (variable PAGE$ basic)
 SCRHIR          := $A000                        ; Adresse début écran HIRES
 SCREEN          := $BB80                        ; Adresse début écran TEXT
+
+; ----------------------------------------------------------------------------
+.include "telemon.inc"
+
+; ----------------------------------------------------------------------------
+	.org	$c000
+
 ; ----------------------------------------------------------------------------
         .byte   $00,$00,$00,$00,$00,$00,$00,$00 ; C000 00 00 00 00 00 00 00 00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00 ; C008 00 00 00 00 00 00 00 00
@@ -1567,39 +1574,72 @@ LD706:
         rts                                     ; D710 60
 
 ; ----------------------------------------------------------------------------
+; Compare le nom de fichier dans BUFNOM avec une entrée dans BUF3
+;
+; Entrée:
+;    X: Offset vers l'entrée dans BUF3
+;
+; Sortie:
+;    Z: 1 -> Fichier non trouvé, 0 -> Fichier trouvé
+;    Y: 0
+;    X: Offset vers l'entrée trouvée si elle correspond à BUFNOM
+;    X: Offset vers la première entrée disponible dans le catalogue si non trouvé
 LD711:
         ldy     #$F4                            ; D711 A0 F4
 LD713:
-        lda     $0424,y                         ; D713 B9 24 04
+        ; Saute les '?' dans BUFNOM (joker)
+        lda     BUFNOM+1-$F4,y                  ; D713 B9 24 04
         cmp     #'?'                            ; D716 C9 3F
         beq     LD71F                           ; D718 F0 05
 
+        ; Caractère dans BUFNOM et dans l'entrée de BUF3 différents?
+        ; Oui -> passer à l'entrée suivante
         cmp     BUF3,x                          ; D71A DD 00 C4
         bne     _XTRVNX                         ; D71D D0 1C
 
 LD71F:
+        ; Passe au caractère suivant dans BUF3 et BUFNOM
+        ; et boucle pour le test
         inx                                     ; D71F E8
         iny                                     ; D720 C8
         bne     LD713                           ; D721 D0 F0
 
+        ; L'entrée dans BUF3 correspond à BUFNOM
         ldx     POSNMX                          ; D723 AE 16 05
         rts                                     ; D726 60
 
 ; ----------------------------------------------------------------------------
 ; Cherche un fichier
+;
+; Entrée:
+;
+; Sortie:
+;    Z: 1 -> Fichier non trouvé, 0 -> Fichier trouvé
+;    Y: 0
+;    X: Offset vers l'entrée trouvée si elle correspond à BUFNOM
+;    X: Offset vers la première entrée disponible dans le catalogue si non trouvé
+;
+; Remarque: le manuel du développeur indique que Z=1 si le fichier a été trouvé
 _XTRVNM:
+        ; Charge les 2 secteurs de BITMAP en mémoire
         jsr     _XPMAP                          ; D727 20 21 D6
+
 LD72A:
+        ; Piste $14, secteur $04 (1er secteur du catalogue)
         lda     #$14                            ; D72A A9 14
         ldy     #$04                            ; D72C A0 04
+
 LD72E:
+        ; Lit le secteur piste A secteur Y dans BUF3
         sta     POSNMP                          ; D72E 8D 14 05
         sty     POSNMS                          ; D731 8C 15 05
         jsr     __PBUF3                         ; D734 20 46 D6
+
+        ; Offset vers la 1ère entrée du catalogue
         ldx     #$10                            ; D737 A2 10
         bne     LD742                           ; D739 D0 07
 
-; Cherche le fichier suivant
+; Cherche le fichier suivant dans le catalogue
 _XTRVNX:
         lda     POSNMX                          ; D73B AD 16 05
 LD73E:
@@ -1607,14 +1647,17 @@ LD73E:
         adc     #$10                            ; D73F 69 10
         tax                                     ; D741 AA
 LD742:
+        ; Offset de l'entrée == 1ère entrée libre?
         stx     POSNMX                          ; D742 8E 16 05
         cpx     BUF3+2                          ; D745 EC 02 C4
         bne     LD711                           ; D748 D0 C7
 
+        ; Oui, on passe au secteur suivant du catalogue si il y en a un
         lda     BUF3                            ; D74A AD 00 C4
         ldy     BUF3+1                          ; D74D AC 01 C4
         bne     LD72E                           ; D750 D0 DC
 
+        ; Fichier non trouvé
         rts                                     ; D752 60
 
 ; ----------------------------------------------------------------------------
@@ -1775,9 +1818,9 @@ LD864:
 LD86A:
         dec     BUF2+2                          ; D86A CE 02 C2
 
-        lda     #<(BUF2+10)                     ; D86D A9 10
+        lda     #<(BUF2+16)                     ; D86D A9 10
         sta     TD0                             ; D86F 85 4D
-        lda     #>(BUF2+10)                     ; D871 A9 C2
+        lda     #>(BUF2+16)                     ; D871 A9 C2
         lsr     INDIC0                          ; D873 46 55
         sta     TD1                             ; D875 85 4E
 LD877:
